@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+
+        <!-- 该插件给Example类添加方法（实际上是给Criteria内部类）来支持不区分大小写的LIKE搜索。这表明通过插件给Example类添加功能，而不是扩展这个类。 -->
+        <plugin type="org.mybatis.generator.plugins.CaseInsensitiveLikePlugin"/>
+
+        <!--
+            这个插件将添加一个新版本selectByExample方法接受RowBounds参数。这支持的MyBatis RowBounds函数，其中一个返回的结果列表可以在长度受到限制，并且开始位置可以被指定。这可以是在分页应用中是有用的。
+            这个插件仅适用于MyBatis3目标运行时环境
+        -->
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>
+
+        <!--
+            这个插件给由MBG生成的Javas添加了java.io.Serializable标记接口。这个插件给实体类增加了serialVersionUID字段。
+            重要提示：这是一个简单的实现java.io.Serializable并且不会尝试做任何版本的类。
+            这个插件接受两个属性：
+                addGWTInterface（可选的）True/False.。如果为true，插件将给实体对象增加谷歌Web工具包（GWT）的 IsSerializable接口。默认值是false。
+                suppressJavaInterface（必须的）True/False。如果为true，插件将不添加java.io.Serializable接口。这是对于其中对象应该是可序列化的GWT，但不是严格意义上的Java的场景。默认值是false。
+        -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin">
+            <property name="suppressJavaInterface" value="false" />
+            <!-- 如果为true，插件将给实体对象增加谷歌Web工具包（GWT）的 IsSerializable接口 -->
+            <property name="addGWTInterface" value="false"/>
+        </plugin>
+
+        <!-- 将Mapper类改成DAO类 -->
+        <plugin type="mybatis.plugins.RenameMapper2DaoPlugin"/>
+
+        <!-- 重命名方法 Mapper方法 *Example -> *Condition-->
+        <plugin type="mybatis.plugins.RenameExample2ConditionPlugin"/>
+
+        <!-- Mapper添加注解方法 -->
+        <plugin type="mybatis.plugins.AddMapperAnnotationPlugin">
+            <property name="annotation" value="@Repository"/>
+            <property name="annotationPackage" value="org.springframework.stereotype.Repository"/>
+        </plugin>
+
+        <!-- alias deleted -->
+        <plugin type="mybatis.plugins.AliasDeletedPlugin">
+            <property name="column" value="deleted"/>
+            <!-- 删除操作时赋值 -->
+            <property name="value" value="1"/>
+        </plugin>
+
+        <!-- generate service interface and implement -->
+        <plugin type="mybatis.plugins.BaseMethodPlugin">
+            <property name="targetProject" value="E:\Beeant\www\mygithub\mybatis-generator\mybatis-generator\src\codegen\main\java\"/>
+            <property name="servicePackage" value="com.beeant.service"/>
+            <property name="serviceImplPackage" value="com.beeant.service.impl" />
+
+            <!-- if set commonReturnType, the service and controller's return will set to this -->
+            <property name="commonReturnType" value="com.beeant.common.Message"/>
+            <property name="baseController" value="com.beeant.common.base.BaseController"/>
+            <property name="controllerPackage" value="com.beeant.mvc.controller" />
+            <property name="baseServiceInterface" value="com.beeant.common.base.IBaseService" />
+            <property name="baseServiceImplements" value="com.beeant.common.base.BaseServiceImpl" />
+            <property name="baseDao" value="com.beeant.common.base.IBaseDao"/>
+        </plugin>
+
+        <commentGenerator>
+            <property name="suppressAllComments" value="false"/>
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/beeant"
+                        userId="root"
+                        password="123456">
+        </jdbcConnection>
+
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.beeant.dto" targetProject="E:\Beeant\www\mygithub\mybatis-generator\mybatis-generator\src\codegen\main\java\">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+            <property name="constructorBased" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mybatis.mysql"  targetProject="E:\Beeant\www\mygithub\mybatis-generator\mybatis-generator\src\codegen\main\resources\">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.beeant.dao" targetProject="E:\Beeant\www\mygithub\mybatis-generator\mybatis-generator\src\codegen\main\java\">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <table tableName="%" >
+            <!--<columnOverride column="UNSIGNED_BIGINT_FIELD" javaType="java.lang.Object" jdbcType="LONG" />-->
+        </table>
+    </context>
+</generatorConfiguration>
