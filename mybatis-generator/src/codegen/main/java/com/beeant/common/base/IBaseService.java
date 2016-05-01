@@ -1,120 +1,41 @@
 package com.beeant.common.base;
 
 import com.beeant.common.Message;
-import org.apache.ibatis.session.RowBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
 
 import java.util.List;
 
 /**
  * Created by Beeant on 2016/2/17.
  */
-public interface IBaseService<Obj, Example> {
+public interface IBaseService<Dto> {
 
-    IBaseDao<Obj, Example> getDao();
+    IBaseDao<Dto> getDao();
 
-    /**
-     * set primary key
-     */
-    void setKey(Obj record);
+    void setDefaults(Dto record);
 
-    /**
-     * get count by condition
-     *
-     * @param example condition
-     * @return number
-     */
-    Message<Integer> countByCondition(Example example);
+    Message<Dto> getByPrimaryKey(String key);
 
-    /**
-     * delete by condition
-     *
-     * @param example condition
-     * @return number
-     */
-    Message<Integer> deleteByCondition(Example example);
+    Message<PageList<Dto>> getAllByParamsByPager(Dto record, PageBounds pageBounds);
 
-    /**
-     * delete by primary key
-     *
-     * @param id key
-     * @return number
-     */
-    Message<Integer> deleteByPrimaryKey(String id);
+    Message<List<Dto>> batchCreate(List<Dto> records);
 
-    /**
-     * insert all
-     *
-     * @param record record
-     * @return number
-     */
-    Message<Integer> insert(Obj record);
+    Message<Dto> create(Dto record);
 
-    /**
-     * insert selective
-     *
-     * @param record record
-     * @return number
-     */
-    Message<Integer> insertSelective(Obj record);
+    Message<Integer> batchDelete(List<String> keys);
 
-    /**
-     * select by condition by row bounds
-     *
-     * @param example   condition
-     * @param rowBounds pager info
-     * @return list
-     */
-    Message<List<Obj>> selectByConditionWithRowbounds(Example example, RowBounds rowBounds);
+    Message<Integer> delete(String key);
 
-    /**
-     * select by condition
-     *
-     * @param example condition
-     * @return list
-     */
-    Message<List<Obj>> selectByCondition(Example example);
+    Message<Integer> updateByPrimaryKeySelective(Dto record);
 
-    /**
-     * select by primary key
-     *
-     * @param id key
-     * @return data
-     */
-    Message<Obj> selectByPrimaryKey(String id);
+    Message<Integer> batchUpdateSelective(List<Dto> records);
 
-    /**
-     * update by condition by selective
-     *
-     * @param record  updated value
-     * @param example condition
-     * @return number
-     */
-    Message<Integer> updateByConditionSelective(Obj record, Example example);
+    Message<Integer> update(Dto record);
 
-    /**
-     * update all by condition
-     * if not set the object value, it will set to null or default value defined in database
-     *
-     * @param record  updated value
-     * @param example condition
-     * @return number
-     */
-    Message<Integer> updateByCondition(Obj record, Example example);
+    Message<Integer> batchUpdate(List<Dto> records);
 
-    /**
-     * update by primary key by selective
-     *
-     * @param record updated value
-     * @return number
-     */
-    Message<Integer> updateByPrimaryKeySelective(Obj record);
+    Message<List<Dto>> getAllByParams(Dto record);
 
-    /**
-     * update by primary
-     * if not set the object value, it will set to null or default value defined in database
-     *
-     * @param record updated value
-     * @return number
-     */
-    Message<Integer> updateByPrimaryKey(Obj record);
+    Message<Dto> getByParams(Dto record);
 }

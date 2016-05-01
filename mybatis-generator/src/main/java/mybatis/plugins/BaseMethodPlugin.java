@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tools.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Beeant on 2016/1/17 0017.
@@ -147,12 +144,25 @@ public class BaseMethodPlugin extends PluginAdapter {
         for (Method method : methods) {
             methodsClone.add(method);
         }
-        // remove from interfaze
+        // reset imports for interfaze
+
         for (Method method : methodsClone) {
             if (removeMethods.get(method.getName()) != null) {
                 interfaze.getMethods().remove(method);
             }
         }
+
+        Map<String, Boolean> removeImports = new HashMap<String, Boolean>();
+        removeImports.put("PackageEnum",true);
+        removeImports.put("List",true);
+        removeImports.put("Param",true);
+        HashSet h=new HashSet();
+        for(FullyQualifiedJavaType fqj:interfaze.getImportedTypes()){
+            if (removeImports.get(fqj.getShortName()) == null) {
+                h.add(fqj);
+            }
+        }
+        interfaze.setImportedTypes(h);
 
         return super.clientGenerated(interfaze, topLevelClass, introspectedTable);
     }
@@ -271,6 +281,7 @@ public class BaseMethodPlugin extends PluginAdapter {
         Method setKey = new Method("setKey");
         setKey.addAnnotation("@Override");
         setKey.setVisibility(JavaVisibility.PUBLIC);
+        setKey.addParameter(paramDto);
         topLevelClass.addImportedType(dtoFqjt);
         if (keyColumn.getFullyQualifiedJavaType().getShortName().equals("String")){
             StringBuilder sb = new StringBuilder();

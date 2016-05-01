@@ -1,16 +1,20 @@
 package mybatis.plugins;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mybatis.generator.api.FullyQualifiedTable;
-import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
-import org.mybatis.generator.api.dom.xml.*;
+import org.mybatis.generator.api.dom.xml.Document;
+import org.mybatis.generator.api.dom.xml.Element;
+import org.mybatis.generator.api.dom.xml.TextElement;
+import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beeant on 2016/2/13.
@@ -26,7 +30,6 @@ public class AliasDeletedPlugin extends PluginAdapter {
     public AliasDeletedPlugin() {
         elementsToAdd = new HashMap<FullyQualifiedTable, List<XmlElement>>();
     }
-
 
 
     @Override
@@ -73,17 +76,29 @@ public class AliasDeletedPlugin extends PluginAdapter {
     private void generateDeleteSql(XmlElement element, IntrospectedTable introspectedTable) {
         ObjectMapper mapper = new ObjectMapper();
         element.setName("update");
-        Element ifElement = element.getElements().get(6);
-        // remove old id attribute and add a new one with the new name
-        for (Iterator<Element> iterator = element.getElements().iterator(); iterator.hasNext(); ) {
-            iterator.next();
-            iterator.remove();
+        boolean isComments = true;
+        int commentIdx = 6;
+        int elSize = element.getElements().size();
+        if (elSize < 6) {
+            commentIdx = 0;
+            isComments = false;
+        }
+        List<Element> elements = new ArrayList<Element>();
+        for (int i = 0; i < commentIdx; i++) {
+            elements.add(element.getElements().get(i));
+        }
+        Element delSql = new TextElement("update " + introspectedTable.getFullyQualifiedTable().toString());
+        elements.add(delSql);
+        elements.add(new TextElement("set ".concat(alias).concat(" = \"").concat(deletedValue).concat("\"")));
+
+        for (int i = commentIdx + 1; i < elSize; i++) {
+            elements.add(element.getElements().get(i));
         }
 
-        element.addElement(new TextElement("update ".concat(introspectedTable.getFullyQualifiedTable().toString())));
-        element.addElement(new TextElement("set ".concat(alias).concat(" = \"").concat(deletedValue).concat("\"")));
-        element.addElement(ifElement);
-
+        //elements.add(new TextElement("update ".concat(introspectedTable.getFullyQualifiedTable().toString())));
+        //elements.add(new TextElement("set ".concat(alias).concat(" = \"").concat(deletedValue).concat("\"")));
+        //elements.add(ifElement);
+        element.setElements(elements);
 
     }
 }

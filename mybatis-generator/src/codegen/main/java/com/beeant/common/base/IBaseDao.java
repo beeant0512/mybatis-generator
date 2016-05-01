@@ -1,36 +1,34 @@
 package com.beeant.common.base;
 
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
 
 /**
  * Created by Beeant on 2016/2/25.
  */
-public interface IBaseDao<Dto, Example> {
+public interface IBaseDao<Dto> {
 
-    int countByCondition(Example example);
+    Dto getByPrimaryKey(String key);
 
-    int deleteByCondition(Example example);
+    PageList<Dto> getAllByParamsByPager(@Param("item") Dto record, @Param("pageBounds") PageBounds pageBounds);
 
-    int deleteByPrimaryKey(String roleId);
+    int batchCreate(List<Dto> records);
 
-    int insert(Dto record);
+    int create(Dto record);
 
-    int insertSelective(Dto record);
+    int batchDelete(List<String> keys);
 
-    List<Dto> selectByConditionWithRowbounds(Example example, RowBounds rowBounds);
-
-    List<Dto> selectByCondition(Example example);
-
-    Dto selectByPrimaryKey(String roleId);
-
-    int updateByConditionSelective(@Param("record") Dto record, @Param("example") Example example);
-
-    int updateByCondition(@Param("record") Dto record, @Param("example") Example example);
+    int delete(String key);
 
     int updateByPrimaryKeySelective(Dto record);
 
-    int updateByPrimaryKey(Dto record);
+    int batchUpdateSelective(List<Dto> records);
+
+    int update(Dto record);
+
+    int batchUpdate(List<Dto> records);
+
 }

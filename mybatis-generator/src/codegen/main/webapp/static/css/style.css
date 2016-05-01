@@ -1,0 +1,74 @@
+.ui.sidebar {
+    top: 42px; /* top menu's height */
+    overflow: visible !important;
+}
+
+.ui.item > .item {
+    padding: 0;
+}
+
+.item.top {
+    margin-right: -1.14286em;
+    margin-left: -1.14286em;
+}
+
+.item.level {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.item.level .menu {
+    margin-top: 0 !important;
+}
+
+/* sub menu height */
+.ui.vertical.menu .menu .item {
+    padding-top: 1.14285714em;
+    padding-bottom: 1.14285714em;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.ui.vertical.menu .item .menu .active.item {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.right {
+    float: right;
+}
+
+.left {
+    float: left;
+}
+
+.mobile.only.icon{
+    display: none;
+}
+
+.ui.menu .item.mobile.only{
+    display: none;
+}
+
+/* tablet and computer visible */
+@media only screen and (min-width: 767px) {
+    .
+}
+
+/* sidebar invisible in tablet*/
+@media only screen and (max-width: 767px) {
+    .ui.visible.sidebar {
+        visibility: hidden;
+    }
+    .mobile.only.icon{
+        display: inherit;
+    }
+    .ui.menu .item.mobile.only{
+        display: inherit;
+    }
+    .mobile.hide{
+        display: none!important;
+    }
+    .ui.visible.left.sidebar ~ .fixed, .ui.visible.left.sidebar ~ .pusher {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}

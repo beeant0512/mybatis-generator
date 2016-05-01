@@ -1,5 +1,6 @@
 package com.beeant.common.utils;
 
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.Serializable;
@@ -33,15 +34,13 @@ public class DataTables<Dto> implements Serializable {
      * that all records should be returned (although that negates any benefits of server-side processing!)
      */
     private int length;
-    /**
-     * orders
-     * e.g 'id asc, name desc'
-     */
-    private String orders;
-    /**
-     * search value
-     */
-    private String search;
+
+    private List<String> orderColumn = new ArrayList<String>();
+
+    private List<String> orderDir = new ArrayList<String>();
+
+    private PageBounds pageBounds = new PageBounds();
+
     /**
      * Total records, before filtering (i.e. the total number of records in the database)
      */
@@ -68,167 +67,108 @@ public class DataTables<Dto> implements Serializable {
 
     private String DT_RowData;
 
-
-    /**
-     * Getter for property 'draw'.
-     *
-     * @return Value for property 'draw'.
-     */
     public long getDraw() {
         return draw;
     }
 
-    /**
-     * Setter for property 'draw'.
-     *
-     * @param draw Value to set for property 'draw'.
-     */
     public void setDraw(long draw) {
         this.draw = draw;
     }
 
-    /**
-     * Getter for property 'start'.
-     *
-     * @return Value for property 'start'.
-     */
     public int getStart() {
         return start;
     }
 
-    /**
-     * Setter for property 'start'.
-     *
-     * @param start Value to set for property 'start'.
-     */
     public void setStart(int start) {
         this.start = start;
     }
 
-    /**
-     * Getter for property 'length'.
-     *
-     * @return Value for property 'length'.
-     */
     public int getLength() {
         return length;
     }
 
-    /**
-     * Setter for property 'length'.
-     *
-     * @param length Value to set for property 'length'.
-     */
     public void setLength(int length) {
         this.length = length;
     }
 
-    /**
-     * Getter for property 'orders'.
-     *
-     * @return Value for property 'orders'.
-     */
-    public String getOrders() {
-        return orders;
+    public List<String> getOrderColumn() {
+        return orderColumn;
     }
 
-    /**
-     * Setter for property 'orders'.
-     *
-     * @param orders Value to set for property 'orders'.
-     */
-    public void setOrders(String orders) {
-        this.orders = orders;
+    public void setOrderColumn(List<String> orderColumn) {
+        this.orderColumn = orderColumn;
     }
 
-    /**
-     * Getter for property 'search'.
-     *
-     * @return Value for property 'search'.
-     */
-    public String getSearch() {
-        return search;
+    public List<String> getOrderDir() {
+        return orderDir;
     }
 
-    /**
-     * Setter for property 'search'.
-     *
-     * @param search Value to set for property 'search'.
-     */
-    public void setSearch(String search) {
-        this.search = search;
+    public void setOrderDir(List<String> orderDir) {
+        this.orderDir = orderDir;
     }
 
-    /**
-     * Getter for property 'recordsTotal'.
-     *
-     * @return Value for property 'recordsTotal'.
-     */
+    public PageBounds getPageBounds() {
+        return pageBounds;
+    }
+
+    public void setPageBounds(PageBounds pageBounds) {
+        this.pageBounds = pageBounds;
+    }
+
     public long getRecordsTotal() {
         return recordsTotal;
     }
 
-    /**
-     * Setter for property 'recordsTotal'.
-     *
-     * @param recordsTotal Value to set for property 'recordsTotal'.
-     */
     public void setRecordsTotal(long recordsTotal) {
         this.recordsTotal = recordsTotal;
     }
 
-    /**
-     * Getter for property 'recordsFiltered'.
-     *
-     * @return Value for property 'recordsFiltered'.
-     */
     public long getRecordsFiltered() {
         return recordsFiltered;
     }
 
-    /**
-     * Setter for property 'recordsFiltered'.
-     *
-     * @param recordsFiltered Value to set for property 'recordsFiltered'.
-     */
     public void setRecordsFiltered(long recordsFiltered) {
         this.recordsFiltered = recordsFiltered;
     }
 
-    /**
-     * Getter for property 'data'.
-     *
-     * @return Value for property 'data'.
-     */
     public List<Dto> getData() {
         return data;
     }
 
-    /**
-     * Setter for property 'data'.
-     *
-     * @param data Value to set for property 'data'.
-     */
     public void setData(List<Dto> data) {
         this.data = data;
     }
 
-    /**
-     * Getter for property 'error'.
-     *
-     * @return Value for property 'error'.
-     */
     public String getError() {
         return error;
     }
 
-    /**
-     * Setter for property 'error'.
-     *
-     * @param error Value to set for property 'error'.
-     */
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getDT_RowId() {
+        return DT_RowId;
+    }
+
+    public void setDT_RowId(String DT_RowId) {
+        this.DT_RowId = DT_RowId;
+    }
+
+    public String getDT_RowClass() {
+        return DT_RowClass;
+    }
+
+    public void setDT_RowClass(String DT_RowClass) {
+        this.DT_RowClass = DT_RowClass;
+    }
+
+    public String getDT_RowData() {
+        return DT_RowData;
+    }
+
+    public void setDT_RowData(String DT_RowData) {
+        this.DT_RowData = DT_RowData;
     }
 
     public void setReturn(ModelAndView mav) {

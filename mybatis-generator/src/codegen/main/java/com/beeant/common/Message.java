@@ -1,5 +1,7 @@
 package com.beeant.common;
 
+import com.beeant.common.enums.EnErrorCode;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class Message<T> implements Serializable {
     /**
      * 错误码
      */
-    private int code = 0;
+    private String code = "0";
 
     /**
      * 状态
@@ -76,7 +78,7 @@ public class Message<T> implements Serializable {
      *
      * @return Value for property 'code'.
      */
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
@@ -85,7 +87,7 @@ public class Message<T> implements Serializable {
      *
      * @param code Value to set for property 'code'.
      */
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -123,5 +125,10 @@ public class Message<T> implements Serializable {
      */
     public void setData(T data) {
         this.data = data;
+    }
+
+    public void setCode(EnErrorCode error){
+        this.code = error.getCode();
+        this.msg = error.getDescription();
     }
 }
