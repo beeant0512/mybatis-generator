@@ -20,7 +20,7 @@ public class StartUp  {
         try {
             List<String> warnings = new ArrayList<String>();
             boolean overwrite = true;
-            File configFile = new File(StartUp.class.getResource("generatorConfig.xml").toURI());
+            File configFile = new File(StartUp.class.getResource("generatorConfig-changan.xml").toURI());
             ConfigurationParser cp = new ConfigurationParser(warnings);
             Configuration config = cp.parseConfiguration(configFile);
             DefaultShellCallback callback = new DefaultShellCallback(overwrite);

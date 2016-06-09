@@ -101,4 +101,32 @@ public class GeneratedXmlFile extends GeneratedFile {
     public boolean isMergeable() {
         return isMergeable;
     }
+
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setTargetPackage(String targetPackage) {
+        this.targetPackage = targetPackage;
+    }
+
+    public void setMergeable(boolean mergeable) {
+        isMergeable = mergeable;
+    }
+
+    public void setXmlFormatter(XmlFormatter xmlFormatter) {
+        this.xmlFormatter = xmlFormatter;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public XmlFormatter getXmlFormatter() {
+        return xmlFormatter;
+    }
 }

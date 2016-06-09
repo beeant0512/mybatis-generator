@@ -15,18 +15,10 @@
  */
 package org.mybatis.generator.api.dom.java;
 
-import static org.mybatis.generator.api.dom.OutputUtilities.calculateImports;
-import static org.mybatis.generator.api.dom.OutputUtilities.javaIndent;
-import static org.mybatis.generator.api.dom.OutputUtilities.newLine;
-import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import static org.mybatis.generator.api.dom.OutputUtilities.*;
+import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
 
 /**
  * The Class Interface.
@@ -297,5 +289,29 @@ public class Interface extends JavaElement implements CompilationUnit {
      */
     public void addStaticImports(Set<String> staticImports) {
         this.staticImports.addAll(staticImports);
+    }
+
+    public void setImportedTypes(Set<FullyQualifiedJavaType> importedTypes) {
+        this.importedTypes = importedTypes;
+    }
+
+    public void setStaticImports(Set<String> staticImports) {
+        this.staticImports = staticImports;
+    }
+
+    public void setType(FullyQualifiedJavaType type) {
+        this.type = type;
+    }
+
+    public void setSuperInterfaceTypes(Set<FullyQualifiedJavaType> superInterfaceTypes) {
+        this.superInterfaceTypes = superInterfaceTypes;
+    }
+
+    public void setMethods(List<Method> methods) {
+        this.methods = methods;
+    }
+
+    public void setFileCommentLines(List<String> fileCommentLines) {
+        this.fileCommentLines = fileCommentLines;
     }
 }

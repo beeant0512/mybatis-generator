@@ -1,4 +1,4 @@
-package beeant;
+package changan;
 
 import org.mybatis.generator.api.*;
 import org.mybatis.generator.api.dom.java.*;

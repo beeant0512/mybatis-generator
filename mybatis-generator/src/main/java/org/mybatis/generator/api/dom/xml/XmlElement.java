@@ -169,4 +169,12 @@ public class XmlElement extends Element {
     public void setName(String name) {
         this.name = name;
     }
+
+    public void setElements(List<Element> elements) {
+        this.elements = elements;
+    }
+
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
+    }
 }
