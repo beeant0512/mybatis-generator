@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2015 the original author or authors.
+ *    Copyright 2006-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -90,7 +90,8 @@ public class TopLevelClass extends InnerClass implements CompilationUnit {
         if (importedType != null
                 && importedType.isExplicitlyImported()
                 && !importedType.getPackageName().equals(
-                        getType().getPackageName())) {
+                        getType().getPackageName())
+                && !importedType.getShortName().equals(getType().getShortName())) {
             importedTypes.add(importedType);
         }
     }
@@ -135,7 +136,7 @@ public class TopLevelClass extends InnerClass implements CompilationUnit {
             newLine(sb);
         }
 
-        sb.append(super.getFormattedContent(0));
+        sb.append(super.getFormattedContent(0, this));
 
         return sb.toString();
     }

@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2015 the original author or authors.
+ *    Copyright 2006-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class Field extends JavaElement {
         this.initializationString = initializationString;
     }
 
-    public String getFormattedContent(int indentLevel) {
+    public String getFormattedContent(int indentLevel, CompilationUnit compilationUnit) {
         StringBuilder sb = new StringBuilder();
 
         addFormattedJavadoc(sb, indentLevel);
@@ -118,7 +118,7 @@ public class Field extends JavaElement {
             sb.append("volatile "); //$NON-NLS-1$
         }
         
-        sb.append(type.getShortName());
+        sb.append(JavaDomUtils.calculateTypeName(compilationUnit, type));
 
         sb.append(' ');
         sb.append(name);

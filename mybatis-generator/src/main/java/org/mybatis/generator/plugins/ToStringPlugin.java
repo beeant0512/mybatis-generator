@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2015 the original author or authors.
+ *    Copyright 2006-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 package org.mybatis.generator.plugins;
 
+import static org.mybatis.generator.internal.util.StringUtility.isTrue;
+
 import java.util.List;
+import java.util.Properties;
 
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
@@ -26,6 +29,15 @@ import org.mybatis.generator.api.dom.java.Method;
 import org.mybatis.generator.api.dom.java.TopLevelClass;
 
 public class ToStringPlugin extends PluginAdapter {
+
+    private boolean useToStringFromRoot;
+
+    @Override
+    public void setProperties(Properties properties) {
+        super.setProperties(properties);
+        useToStringFromRoot = isTrue(properties.getProperty("useToStringFromRoot"));
+    }
+
     public boolean validate(List<String> warnings) {
         return true;
     }
@@ -79,6 +91,10 @@ public class ToStringPlugin extends PluginAdapter {
         }
 
         method.addBodyLine("sb.append(\"]\");"); //$NON-NLS-1$
+        if (useToStringFromRoot && topLevelClass.getSuperClass() != null) {
+            method.addBodyLine("sb.append(\", from super class \");"); //$NON-NLS-1$
+            method.addBodyLine("sb.append(super.toString());"); //$NON-NLS-1$
+        }
         method.addBodyLine("return sb.toString();"); //$NON-NLS-1$
 
         topLevelClass.addMethod(method);

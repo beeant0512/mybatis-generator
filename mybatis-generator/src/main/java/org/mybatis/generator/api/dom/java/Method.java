@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2015 the original author or authors.
+ *    Copyright 2006-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -156,9 +156,10 @@ public class Method extends JavaElement {
      *            the indent level
      * @param interfaceMethod
      *            the interface method
+     * @param compilationUnit the compilation unit
      * @return the formatted content
      */
-    public String getFormattedContent(int indentLevel, boolean interfaceMethod) {
+    public String getFormattedContent(int indentLevel, boolean interfaceMethod, CompilationUnit compilationUnit) {
         StringBuilder sb = new StringBuilder();
 
         addFormattedJavadoc(sb, indentLevel);
@@ -192,7 +193,7 @@ public class Method extends JavaElement {
             if (getReturnType() == null) {
                 sb.append("void"); //$NON-NLS-1$
             } else {
-                sb.append(getReturnType().getShortName());
+                sb.append(JavaDomUtils.calculateTypeName(compilationUnit, getReturnType()));
             }
             sb.append(' ');
         }
@@ -208,7 +209,7 @@ public class Method extends JavaElement {
                 comma = true;
             }
 
-            sb.append(parameter.getFormattedContent());
+            sb.append(parameter.getFormattedContent(compilationUnit));
         }
 
         sb.append(')');
@@ -223,7 +224,7 @@ public class Method extends JavaElement {
                     comma = true;
                 }
 
-                sb.append(fqjt.getShortName());
+                sb.append(JavaDomUtils.calculateTypeName(compilationUnit, fqjt));
             }
         }
 

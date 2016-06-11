@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2015 the original author or authors.
+ *    Copyright 2006-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -100,33 +100,5 @@ public class GeneratedXmlFile extends GeneratedFile {
     @Override
     public boolean isMergeable() {
         return isMergeable;
-    }
-
-    public void setDocument(Document document) {
-        this.document = document;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public void setTargetPackage(String targetPackage) {
-        this.targetPackage = targetPackage;
-    }
-
-    public void setMergeable(boolean mergeable) {
-        isMergeable = mergeable;
-    }
-
-    public void setXmlFormatter(XmlFormatter xmlFormatter) {
-        this.xmlFormatter = xmlFormatter;
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
-    public XmlFormatter getXmlFormatter() {
-        return xmlFormatter;
     }
 }

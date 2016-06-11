@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2015 the original author or authors.
+ *    Copyright 2006-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class Parameter {
         annotations.add(annotation);
     }
 
-    public String getFormattedContent() {
+    public String getFormattedContent(CompilationUnit compilationUnit) {
         StringBuilder sb = new StringBuilder();
 
         for (String annotation : annotations) {
@@ -80,7 +80,8 @@ public class Parameter {
             sb.append(' ');
         }
 
-        sb.append(type.getShortName());
+        sb.append(JavaDomUtils.calculateTypeName(compilationUnit, type));
+        
         sb.append(' ');
         if (isVarargs) {
             sb.append("... "); //$NON-NLS-1$
@@ -92,7 +93,7 @@ public class Parameter {
 
     @Override
     public String toString() {
-        return getFormattedContent();
+        return getFormattedContent(null);
     }
 
     public boolean isVarargs() {

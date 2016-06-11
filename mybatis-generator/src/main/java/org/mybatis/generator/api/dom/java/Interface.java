@@ -1,5 +1,5 @@
 /**
- *    Copyright 2006-2015 the original author or authors.
+ *    Copyright 2006-2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,10 +15,18 @@
  */
 package org.mybatis.generator.api.dom.java;
 
-import java.util.*;
-
-import static org.mybatis.generator.api.dom.OutputUtilities.*;
+import static org.mybatis.generator.api.dom.OutputUtilities.calculateImports;
+import static org.mybatis.generator.api.dom.OutputUtilities.javaIndent;
+import static org.mybatis.generator.api.dom.OutputUtilities.newLine;
 import static org.mybatis.generator.internal.util.StringUtility.stringHasValue;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The Class Interface.
@@ -157,7 +165,7 @@ public class Interface extends JavaElement implements CompilationUnit {
                     comma = true;
                 }
 
-                sb.append(fqjt.getShortName());
+                sb.append(JavaDomUtils.calculateTypeName(this, fqjt));
             }
         }
 
@@ -168,7 +176,7 @@ public class Interface extends JavaElement implements CompilationUnit {
         while (mtdIter.hasNext()) {
             newLine(sb);
             Method method = mtdIter.next();
-            sb.append(method.getFormattedContent(indentLevel, true));
+            sb.append(method.getFormattedContent(indentLevel, true, this));
             if (mtdIter.hasNext()) {
                 newLine(sb);
             }
@@ -289,29 +297,5 @@ public class Interface extends JavaElement implements CompilationUnit {
      */
     public void addStaticImports(Set<String> staticImports) {
         this.staticImports.addAll(staticImports);
-    }
-
-    public void setImportedTypes(Set<FullyQualifiedJavaType> importedTypes) {
-        this.importedTypes = importedTypes;
-    }
-
-    public void setStaticImports(Set<String> staticImports) {
-        this.staticImports = staticImports;
-    }
-
-    public void setType(FullyQualifiedJavaType type) {
-        this.type = type;
-    }
-
-    public void setSuperInterfaceTypes(Set<FullyQualifiedJavaType> superInterfaceTypes) {
-        this.superInterfaceTypes = superInterfaceTypes;
-    }
-
-    public void setMethods(List<Method> methods) {
-        this.methods = methods;
-    }
-
-    public void setFileCommentLines(List<String> fileCommentLines) {
-        this.fileCommentLines = fileCommentLines;
     }
 }
