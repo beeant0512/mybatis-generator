@@ -54,13 +54,15 @@ public class BaseJavaFiles extends PluginAdapter {
                 break;
             }
         }
-        addExampleArg = null != globalTableConfiguration &&
-                (globalTableConfiguration.isCountByExampleStatementEnabled()
-                || globalTableConfiguration.isDeleteByExampleStatementEnabled()
-                || globalTableConfiguration.isSelectByExampleStatementEnabled()
-                || globalTableConfiguration.isUpdateByExampleStatementEnabled()
-                );
-        if (null!=superDao){
+        addExampleArg = Boolean.valueOf(properties.getProperty("noExample")) && (
+                null != globalTableConfiguration &&
+                        (globalTableConfiguration.isCountByExampleStatementEnabled()
+                                || globalTableConfiguration.isDeleteByExampleStatementEnabled()
+                                || globalTableConfiguration.isSelectByExampleStatementEnabled()
+                                || globalTableConfiguration.isUpdateByExampleStatementEnabled()
+                        )
+        );
+        if (null != superDao) {
             FullyQualifiedJavaType superDaoFqjt = new FullyQualifiedJavaType(superDao);
             FullyQualifiedJavaType objectFqjt = new FullyQualifiedJavaType(context.getJavaModelGeneratorConfiguration().getTargetPackage() + "." + introspectedTable.getFullyQualifiedTable().getDomainObjectName());
             FullyQualifiedJavaType objectExample = new FullyQualifiedJavaType(objectFqjt.getFullyQualifiedName() + "Example");
@@ -79,8 +81,6 @@ public class BaseJavaFiles extends PluginAdapter {
 
         List<GeneratedJavaFile> files = new ArrayList<GeneratedJavaFile>();
         if (!excuted) {
-
-
             excuted = true;
             if (null != superService) {
                 superServiceInterfaceGenerated(introspectedTable, files);
@@ -143,17 +143,27 @@ public class BaseJavaFiles extends PluginAdapter {
 
 
         if (null != globalTableConfiguration && globalTableConfiguration.isCountByExampleStatementEnabled()) {
-            addExampleArg = true;
+            addExampleArg = true && Boolean.valueOf(properties.getProperty("noExample"));
             method = new Method("countByExample");
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addParameter(example);
+            if (addExampleArg){
+                method.addParameter(example);
+            } else {
+                method.addParameter(obj);
+            }
 
             interfaze.addMethod(method);
         }
         if (null != globalTableConfiguration && globalTableConfiguration.isDeleteByExampleStatementEnabled()) {
-            addExampleArg = true;
+            addExampleArg = true && Boolean.valueOf(properties.getProperty("noExample"));
             method = new Method("deleteByExample");
-            method.addParameter(example);
+
+            if (addExampleArg){
+                method.addParameter(example);
+            } else {
+                method.addParameter(obj);
+            }
+
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
             interfaze.addMethod(method);
         }
@@ -178,14 +188,22 @@ public class BaseJavaFiles extends PluginAdapter {
         }
 
         if (null != globalTableConfiguration && globalTableConfiguration.isSelectByExampleStatementEnabled()) {
-            addExampleArg = true;
+            addExampleArg = true && Boolean.valueOf(properties.getProperty("noExample"));
             method = new Method("selectByExampleWithBLOBs");
             method.setReturnType(list);
-            method.addParameter(example);
+            if (addExampleArg){
+                method.addParameter(example);
+            } else {
+                method.addParameter(obj);
+            }
             interfaze.addMethod(method);
 
             method = new Method("selectByExample");
-            method.addParameter(example);
+            if (addExampleArg){
+                method.addParameter(example);
+            } else {
+                method.addParameter(obj);
+            }
             method.setReturnType(list);
             interfaze.addMethod(method);
 
@@ -200,24 +218,40 @@ public class BaseJavaFiles extends PluginAdapter {
         }
 
         if (null != globalTableConfiguration && globalTableConfiguration.isUpdateByExampleStatementEnabled()) {
-            addExampleArg = true;
+            addExampleArg = true && Boolean.valueOf(properties.getProperty("noExample"));
             method = new Method("updateByExampleSelective");
-            method.addParameter(example);
+            if (addExampleArg){
+                method.addParameter(example);
+            } else {
+                method.addParameter(obj);
+            }
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
             interfaze.addMethod(method);
 
             method = new Method("updateByExampleWithBLOBs");
-            method.addParameter(example);
+            if (addExampleArg){
+                method.addParameter(example);
+            } else {
+                method.addParameter(obj);
+            }
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
             interfaze.addMethod(method);
 
             method = new Method("updateByExample");
-            method.addParameter(example);
+            if (addExampleArg){
+                method.addParameter(example);
+            } else {
+                method.addParameter(obj);
+            }
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
             interfaze.addMethod(method);
 
             method = new Method("updateByExampleWithoutBLOBs");
-            method.addParameter(example);
+            if (addExampleArg){
+                method.addParameter(example);
+            } else {
+                method.addParameter(obj);
+            }
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
             interfaze.addMethod(method);
         }
@@ -240,7 +274,6 @@ public class BaseJavaFiles extends PluginAdapter {
 
         return addExampleArg;
     }
-
 
     private boolean superServiceMethodGenerated(Interface interfaze, IntrospectedTable introspectedTable) {
         FullyQualifiedJavaType list = FullyQualifiedJavaType.getNewListInstance();
@@ -633,15 +666,15 @@ public class BaseJavaFiles extends PluginAdapter {
         method = new Method("setPrimaryKey");
         method.addAnnotation("@Override");
         method.setVisibility(JavaVisibility.PUBLIC);
-        String lowerObjectName = StringUtils.lowerString(objectName,0,1);
+        String lowerObjectName = StringUtils.lowerString(objectName, 0, 1);
         Parameter parameter = new Parameter(objectFqjt, lowerObjectName);
         method.addParameter(parameter);
 
         method.addBodyLine("");
         StringBuilder sb;
         boolean importedUUID = false;
-        for (IntrospectedColumn column : introspectedTable.getPrimaryKeyColumns()){
-            if (column.getFullyQualifiedJavaType().getShortName().equals("String")){
+        for (IntrospectedColumn column : introspectedTable.getPrimaryKeyColumns()) {
+            if (column.getFullyQualifiedJavaType().getShortName().equals("String")) {
                 sb = new StringBuilder();
                 sb.append("if(!StringUtils.isEmpty(");
                 sb.append(lowerObjectName);
@@ -656,7 +689,7 @@ public class BaseJavaFiles extends PluginAdapter {
                 sb.append("(UUID.randomUUID().toString());");
                 method.addBodyLine(sb.toString());
                 method.addBodyLine("}");
-                if (!importedUUID){
+                if (!importedUUID) {
                     importedUUID = true;
                     topLevelClass.addImportedType(new FullyQualifiedJavaType("java.util.UUID"));
                 }

@@ -5,16 +5,31 @@
 
 <generatorConfiguration>
     <context id="DB2Tables" targetRuntime="MyBatis3">
+        <plugin type="mybatis.plugins.RenameMapper2DaoPlugin"/>
+
+        <plugin type="mybatis.plugins.DaoAnnotationPlugin">
+            <property name="annotation" value="org.springframework.stereotype.Repository"/>
+        </plugin>
 
         <plugin type="mybatis.plugins.FuzzySearchPlugin">
             <property name="targetPackage" value="mybatis.ext"/>
             <property name="suffix" value=""/> <!-- mapper文件后缀，留空则将方法追加到原Mapper.xml文件中-->
             <property name="pager" value="true"/> <!--是否生成分页查询方法 -->
-            <property name="pageReturn" value="com.github.miemiedev.mybatis.paginator.domain.PageList"/> <!--是否生成分页查询方法 -->
-            <property name="pageParam" value="com.github.miemiedev.mybatis.paginator.domain.PageBounds"/> <!--是否生成分页查询方法 -->
+            <property name="pageReturn"
+                      value="com.github.miemiedev.mybatis.paginator.domain.PageList"/> <!--是否生成分页查询方法 -->
+            <property name="pageParam"
+                      value="com.github.miemiedev.mybatis.paginator.domain.PageBounds"/> <!--是否生成分页查询方法 -->
         </plugin>
 
-        <plugin type="mybatis.plugins.BaseJavaFiles">
+        <plugin type="mybatis.plugins.NoExampleRepositoryPlugin">
+            <property name="pageReturn"
+                      value="com.github.miemiedev.mybatis.paginator.domain.PageList"/> <!--是否生成分页查询方法 -->
+            <property name="pageParam"
+                      value="com.github.miemiedev.mybatis.paginator.domain.PageBounds"/> <!--是否生成分页查询方法 -->
+        </plugin>
+
+        <!--<plugin type="mybatis.plugins.BaseJavaFiles">
+            <property name="noExample" value="false"/>
             <property name="serviceTargetPackage" value="com.beeant.service"/>
             <property name="superService" value="com.beeant.common.service.IBaseService"/>
             <property name="superDao" value="com.beeant.common.dao.IBaseDao"/>
@@ -23,7 +38,7 @@
             <property name="facades" value=""/>
             <property name="bridge" value=""/>
             <property name="controller" value=""/>
-        </plugin>
+        </plugin>-->
 
         <!--
             这个插件给由MBG生成的Javas添加了java.io.Serializable标记接口。这个插件给实体类增加了serialVersionUID字段。
@@ -45,7 +60,7 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/quickweb"
+                        connectionURL="jdbc:mysql://localhost:3306/spring"
                         userId="root"
                         password="123456">
         </jdbcConnection>
@@ -54,17 +69,19 @@
             <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="com.beeant.dto" targetProject="H:\javaweb\angular\src\main\java\">
+        <javaModelGenerator targetPackage="com.beeant.dto"
+                            targetProject="H:\github\mybatis-generator\mybatis-generator\src\codegen\java\">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
-        <sqlMapGenerator targetPackage="mybatis.mysql" targetProject="H:\javaweb\angular\src\main\resources\">
+        <sqlMapGenerator targetPackage="mybatis.mysql"
+                         targetProject="H:\github\mybatis-generator\mybatis-generator\src\codegen\resources\">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.beeant.dao"
-                             targetProject="H:\javaweb\angular\src\main\java\">
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.beeant.repository"
+                             targetProject="H:\github\mybatis-generator\mybatis-generator\src\codegen\java\">
             <property name="enableSubPackages" value="false"/>
 
         </javaClientGenerator>
@@ -74,8 +91,10 @@
                enableDeleteByExample="false"
                enableSelectByExample="false"
                enableUpdateByExample="false"
-        >-->
-        <table tableName="%" >
+        >
+            &lt;!&ndash;<columnOverride column="UNSIGNED_BIGINT_FIELD" javaType="java.lang.Object" jdbcType="LONG" />&ndash;&gt;
+        </table>-->
+        <table tableName="%">
             <!--<columnOverride column="UNSIGNED_BIGINT_FIELD" javaType="java.lang.Object" jdbcType="LONG" />-->
         </table>
     </context>
