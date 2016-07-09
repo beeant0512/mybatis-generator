@@ -26,6 +26,10 @@
 
         <plugin type="mybatis.plugins.BaseClientPlugin">
             <property name="superClient" value="com.beeant.common.dao.IBaseDao" />
+            <property name="superService" value="com.beeant.common.service.IBaseService" />
+            <property name="superServiceImpl" value="com.beeant.common.service.impl.BaseServiceImpl" />
+            <property name="service" value="com.beeant.service" />
+            <property name="serviceImpl" value="com.beeant.service.impl" />
             <property name="generateExample" value="false" />
             <property name="enFuzzySearch" value="true" />
         </plugin>

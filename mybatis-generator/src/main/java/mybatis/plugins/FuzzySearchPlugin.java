@@ -59,9 +59,7 @@ public class FuzzySearchPlugin extends PluginAdapter {
 
             methodReturn = new FullyQualifiedJavaType(context.getProperty("pageList"));
 
-            parameter = new Parameter(pageBounds, "pageBounds");
-            parameter.addAnnotation("@Param(\"pageBounds\")");
-            method.addParameter(parameter);
+
 
             interfaze.addImportedType(pageList);
             interfaze.addImportedType(pageBounds);
@@ -72,6 +70,12 @@ public class FuzzySearchPlugin extends PluginAdapter {
         parameter = new Parameter(baseRecordType, "record");
         parameter.addAnnotation("@Param(\"item\")");
         method.addParameter(parameter);
+
+        if (pager){
+            parameter = new Parameter(pageBounds, "pageBounds");
+            parameter.addAnnotation("@Param(\"pageBounds\")");
+            method.addParameter(parameter);
+        }
 
         methodReturn.addTypeArgument(baseRecordType);
         method.setReturnType(methodReturn);
