@@ -28,8 +28,16 @@ public class NoExampleRepositoryPlugin extends PluginAdapter {
 
     @Override
     public boolean validate(List<String> warnings) {
+        countByExampleName = "";
+        deleteByExampleName = "";
+        selectByExampleWithBLOBsName = "";
+        selectByExampleWithoutBLOBsName = "";
+        updateByExampleSelectiveName = "";
+        updateByExampleWithBLOBsName = "";
+        updateByExampleWithoutBLOBsName = "";
         return true;
     }
+
 
     @Override
     public boolean clientDeleteByExampleMethodGenerated(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
@@ -247,13 +255,18 @@ public class NoExampleRepositoryPlugin extends PluginAdapter {
     public boolean sqlMapDocumentGenerated(Document document, IntrospectedTable introspectedTable) {
         exampleWhereCluse(document, introspectedTable);
         exampleByPagerWhereCluse(document, introspectedTable);
-        selectByExampleWithBLOBs(document, introspectedTable);
-        selectByExampleWithoutBLOBs(document, introspectedTable);
         deleteByExample(document, introspectedTable);
         countByExampleName(document, introspectedTable);
         updateByExampleSelective(document, introspectedTable);
-        updateByExampleWithBLOBs(document, introspectedTable);
+
+        if (introspectedTable.getBLOBColumns().size() > 0){
+            selectByExampleWithBLOBs(document, introspectedTable);
+            updateByExampleWithBLOBs(document, introspectedTable);
+        }
+
+        selectByExampleWithoutBLOBs(document, introspectedTable);
         updateByExampleWithoutBLOBs(document, introspectedTable);
+
         return super.sqlMapDocumentGenerated(document, introspectedTable);
     }
 

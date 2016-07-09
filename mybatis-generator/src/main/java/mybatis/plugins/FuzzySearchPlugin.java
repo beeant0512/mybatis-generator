@@ -25,7 +25,6 @@ public class FuzzySearchPlugin extends PluginAdapter {
     private String suffix;
     private Boolean pager;
     private String targetPackage;
-    private FullyQualifiedJavaType pagePackage;
 
     @Override
     public boolean validate(List<String> warnings) {
@@ -145,6 +144,12 @@ public class FuzzySearchPlugin extends PluginAdapter {
             return files;
         }
         return super.contextGenerateAdditionalXmlFiles(introspectedTable);
+    }
+
+    @Override
+    public boolean sqlMapDocumentGenerated(Document document, IntrospectedTable introspectedTable) {
+        generateFuzzyElement(introspectedTable, document.getRootElement());
+        return super.sqlMapDocumentGenerated(document, introspectedTable);
     }
 
     private GeneratedXmlFile generateXmlFile(IntrospectedTable introspectedTable) {
