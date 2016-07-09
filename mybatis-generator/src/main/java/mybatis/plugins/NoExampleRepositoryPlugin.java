@@ -26,6 +26,9 @@ public class NoExampleRepositoryPlugin extends PluginAdapter {
     private String updateByExampleWithBLOBsName = "";
     private String updateByExampleWithoutBLOBsName = "";
 
+    private FullyQualifiedJavaType pageList;
+    private FullyQualifiedJavaType pageBounds;
+
     @Override
     public boolean validate(List<String> warnings) {
         countByExampleName = "";
@@ -35,6 +38,8 @@ public class NoExampleRepositoryPlugin extends PluginAdapter {
         updateByExampleSelectiveName = "";
         updateByExampleWithBLOBsName = "";
         updateByExampleWithoutBLOBsName = "";
+        pageList = new FullyQualifiedJavaType(context.getProperty("pageList"));
+        pageBounds = new FullyQualifiedJavaType(context.getProperty("pageBounds"));
         return true;
     }
 
@@ -153,15 +158,12 @@ public class NoExampleRepositoryPlugin extends PluginAdapter {
     private void addByPagerMethod(Method method, Interface interfaze, IntrospectedTable introspectedTable) {
         FullyQualifiedJavaType objectFqjt = new FullyQualifiedJavaType(context.getJavaModelGeneratorConfiguration().getTargetPackage() + "." + introspectedTable.getFullyQualifiedTable().getDomainObjectName());
 
-        Method newMethod = new Method(method.getName());
-        FullyQualifiedJavaType methodReturn = method.getReturnType();
+        Method newMethod;
 
         /** by pager method **/
         newMethod = new Method(method.getName() + "ByPager");
 
-        FullyQualifiedJavaType pageList = new FullyQualifiedJavaType(properties.getProperty("pageReturn"));
-        FullyQualifiedJavaType pageBounds = new FullyQualifiedJavaType(properties.getProperty("pageParam"));
-        methodReturn = new FullyQualifiedJavaType(properties.getProperty("pageReturn"));
+        FullyQualifiedJavaType  methodReturn = new FullyQualifiedJavaType(context.getProperty("pageList"));
 
         Parameter parameter = new Parameter(objectFqjt, JavaBeansUtil.getCamelCaseString(introspectedTable.getFullyQualifiedTable().getIntrospectedTableName(),false));
         parameter.addAnnotation("@Param(\"item\")");
@@ -249,6 +251,12 @@ public class NoExampleRepositoryPlugin extends PluginAdapter {
         updateByExampleWithoutBLOBsName = element.getAttributes().get(0).getValue();
         return false;
     }
+
+    @Override
+    public boolean modelExampleClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+        return false;
+    }
+
 
 
     @Override

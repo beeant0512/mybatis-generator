@@ -31,6 +31,10 @@ public class BaseJavaFiles extends PluginAdapter {
     private boolean addExampleArg = false;
     private FullyQualifiedJavaType superServiceInterfaceFqjt;
     private FullyQualifiedJavaType serviceInterfaceFqjt;
+    private FullyQualifiedJavaType pageList;
+    private FullyQualifiedJavaType pageBounds;
+    private FullyQualifiedJavaType methodReturn;
+    private Parameter listOrderParameter;
 
     @Override
     public boolean validate(List<String> warnings) {
@@ -42,6 +46,16 @@ public class BaseJavaFiles extends PluginAdapter {
         facades = properties.getProperty("facades");
         bridge = properties.getProperty("bridge");
         controller = properties.getProperty("controller");
+        pageList = new FullyQualifiedJavaType(properties.getProperty("pageReturn"));
+        pageBounds = new FullyQualifiedJavaType(properties.getProperty("pageParam"));
+        methodReturn = new FullyQualifiedJavaType(properties.getProperty("pageReturn"));
+        FullyQualifiedJavaType t = new FullyQualifiedJavaType("T");
+        methodReturn.addTypeArgument(t);
+        FullyQualifiedJavaType listOrder = FullyQualifiedJavaType.getNewListInstance();
+        FullyQualifiedJavaType order = new FullyQualifiedJavaType(properties.getProperty("order"));
+        listOrder.addTypeArgument(order);
+        listOrderParameter = new Parameter(listOrder, "orders");
+        addExampleArg = !Boolean.valueOf(properties.getProperty("noExample"));
         return true;
     }
 
@@ -54,14 +68,7 @@ public class BaseJavaFiles extends PluginAdapter {
                 break;
             }
         }
-        addExampleArg = Boolean.valueOf(properties.getProperty("noExample")) && (
-                null != globalTableConfiguration &&
-                        (globalTableConfiguration.isCountByExampleStatementEnabled()
-                                || globalTableConfiguration.isDeleteByExampleStatementEnabled()
-                                || globalTableConfiguration.isSelectByExampleStatementEnabled()
-                                || globalTableConfiguration.isUpdateByExampleStatementEnabled()
-                        )
-        );
+
         if (null != superDao) {
             FullyQualifiedJavaType superDaoFqjt = new FullyQualifiedJavaType(superDao);
             FullyQualifiedJavaType objectFqjt = new FullyQualifiedJavaType(context.getJavaModelGeneratorConfiguration().getTargetPackage() + "." + introspectedTable.getFullyQualifiedTable().getDomainObjectName());
@@ -98,8 +105,8 @@ public class BaseJavaFiles extends PluginAdapter {
         Interface interfaze = new Interface(superServiceInterfaceFqjt);
 
         interfaze.setVisibility(JavaVisibility.PUBLIC);
-        addExampleArg = superServiceMethodGenerated(interfaze, introspectedTable);
-        if (addExampleArg) {
+        superServiceMethodGenerated(interfaze, introspectedTable);
+        if (!addExampleArg) {
             superServiceInterfaceFqjt.addTypeArgument(new FullyQualifiedJavaType("Example"));
         }
         GeneratedJavaFile javaFile = new GeneratedJavaFile(interfaze, context.getJavaModelGeneratorConfiguration()
@@ -143,7 +150,7 @@ public class BaseJavaFiles extends PluginAdapter {
 
 
         if (null != globalTableConfiguration && globalTableConfiguration.isCountByExampleStatementEnabled()) {
-            addExampleArg = true && Boolean.valueOf(properties.getProperty("noExample"));
+            addExampleArg = true && !Boolean.valueOf(properties.getProperty("noExample"));
             method = new Method("countByExample");
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
             if (addExampleArg){
@@ -155,7 +162,7 @@ public class BaseJavaFiles extends PluginAdapter {
             interfaze.addMethod(method);
         }
         if (null != globalTableConfiguration && globalTableConfiguration.isDeleteByExampleStatementEnabled()) {
-            addExampleArg = true && Boolean.valueOf(properties.getProperty("noExample"));
+            addExampleArg = true && !Boolean.valueOf(properties.getProperty("noExample"));
             method = new Method("deleteByExample");
 
             if (addExampleArg){
@@ -188,7 +195,7 @@ public class BaseJavaFiles extends PluginAdapter {
         }
 
         if (null != globalTableConfiguration && globalTableConfiguration.isSelectByExampleStatementEnabled()) {
-            addExampleArg = true && Boolean.valueOf(properties.getProperty("noExample"));
+            addExampleArg = true && !Boolean.valueOf(properties.getProperty("noExample"));
             method = new Method("selectByExampleWithBLOBs");
             method.setReturnType(list);
             if (addExampleArg){
@@ -218,7 +225,7 @@ public class BaseJavaFiles extends PluginAdapter {
         }
 
         if (null != globalTableConfiguration && globalTableConfiguration.isUpdateByExampleStatementEnabled()) {
-            addExampleArg = true && Boolean.valueOf(properties.getProperty("noExample"));
+            addExampleArg = true && !Boolean.valueOf(properties.getProperty("noExample"));
             method = new Method("updateByExampleSelective");
             if (addExampleArg){
                 method.addParameter(example);
@@ -275,113 +282,176 @@ public class BaseJavaFiles extends PluginAdapter {
         return addExampleArg;
     }
 
-    private boolean superServiceMethodGenerated(Interface interfaze, IntrospectedTable introspectedTable) {
+    private void superServiceMethodGenerated(Interface interfaze, IntrospectedTable introspectedTable) {
         FullyQualifiedJavaType list = FullyQualifiedJavaType.getNewListInstance();
         FullyQualifiedJavaType t = new FullyQualifiedJavaType("T");
-        FullyQualifiedJavaType exmple = new FullyQualifiedJavaType("Example");
+        FullyQualifiedJavaType exampleFqjt = new FullyQualifiedJavaType("Example");
         list.addTypeArgument(t);
 
         //countByExample
         Method method;
         Parameter obj = new Parameter(t, "obj");
-        Parameter example = new Parameter(exmple, "example");
+        Parameter example = new Parameter(exampleFqjt, "example");
         Parameter key = new Parameter(FullyQualifiedJavaType.getStringInstance(), "key");
+        if (null != globalTableConfiguration){
 
+            if ( globalTableConfiguration.isCountByExampleStatementEnabled()) {
+                method = new Method("countByExample");
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
 
-        if (null != globalTableConfiguration && globalTableConfiguration.isCountByExampleStatementEnabled()) {
-            addExampleArg = true;
-            method = new Method("countByExample");
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addParameter(example);
+                interfaze.addMethod(method);
+            }
+            if ( globalTableConfiguration.isDeleteByExampleStatementEnabled()) {
+                method = new Method("deleteByExample");
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                interfaze.addMethod(method);
+            }
 
-            interfaze.addMethod(method);
-        }
-        if (null != globalTableConfiguration && globalTableConfiguration.isDeleteByExampleStatementEnabled()) {
-            addExampleArg = true;
-            method = new Method("deleteByExample");
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
-        }
+            if ( globalTableConfiguration.isDeleteByPrimaryKeyStatementEnabled()) {
+                method = new Method("deleteByPrimaryKey");
+                method.addParameter(key);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                interfaze.addMethod(method);
+            }
 
-        if (null != globalTableConfiguration && globalTableConfiguration.isDeleteByPrimaryKeyStatementEnabled()) {
-            method = new Method("deleteByPrimaryKey");
-            method.addParameter(key);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
-        }
+            if ( globalTableConfiguration.isInsertStatementEnabled()) {
+                method = new Method("insert");
+                method.addParameter(obj);
+                method.setReturnType(new FullyQualifiedJavaType("T"));
+                interfaze.addMethod(method);
 
-        if (null != globalTableConfiguration && globalTableConfiguration.isInsertStatementEnabled()) {
-            method = new Method("insert");
-            method.addParameter(obj);
-            method.setReturnType(new FullyQualifiedJavaType("T"));
-            interfaze.addMethod(method);
+                method = new Method("insertSelective");
+                method.addParameter(obj);
+                method.setReturnType(new FullyQualifiedJavaType("T"));
+                interfaze.addMethod(method);
+            }
 
-            method = new Method("insertSelective");
-            method.addParameter(obj);
-            method.setReturnType(new FullyQualifiedJavaType("T"));
-            interfaze.addMethod(method);
-        }
+            if ( globalTableConfiguration.isSelectByExampleStatementEnabled()) {
+                method = new Method("selectByExampleWithBLOBs");
+                method.setReturnType(list);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                interfaze.addMethod(method);
 
-        if (null != globalTableConfiguration && globalTableConfiguration.isSelectByExampleStatementEnabled()) {
-            addExampleArg = true;
-            method = new Method("selectByExampleWithBLOBs");
-            method.setReturnType(list);
-            method.addParameter(example);
-            interfaze.addMethod(method);
+                method = new Method("selectByExampleWithBLOBs");
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.addParameter(listOrderParameter);
+                method.setReturnType(list);
+                interfaze.addMethod(method);
 
-            method = new Method("selectByExample");
-            method.addParameter(example);
-            method.setReturnType(list);
-            interfaze.addMethod(method);
+                method = new Method("selectByExampleWithBLOBsByPager");
+                method.setReturnType(methodReturn);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                interfaze.addImportedType(pageBounds);
+                interfaze.addImportedType(pageList);
 
-            interfaze.addImportedType(FullyQualifiedJavaType.getNewListInstance());
-        }
+                method.addParameter(new Parameter(pageBounds,"pageBounds"));
+                interfaze.addMethod(method);
 
-        if (null != globalTableConfiguration && globalTableConfiguration.isSelectByPrimaryKeyStatementEnabled()) {
-            method = new Method("selectByPrimaryKey");
-            method.addParameter(key);
-            method.setReturnType(t);
-            interfaze.addMethod(method);
-        }
+                method = new Method("selectByExample");
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(list);
+                interfaze.addMethod(method);
 
-        if (null != globalTableConfiguration && globalTableConfiguration.isUpdateByExampleStatementEnabled()) {
-            addExampleArg = true;
-            method = new Method("updateByExampleSelective");
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
+                method = new Method("selectByExample");
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.addParameter(listOrderParameter);
+                method.setReturnType(list);
+                interfaze.addMethod(method);
 
-            method = new Method("updateByExampleWithBLOBs");
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
+                method = new Method("selectByExampleByPager");
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.addParameter(new Parameter(pageBounds,"pageBounds"));
+                method.setReturnType(methodReturn);
+                interfaze.addMethod(method);
 
-            method = new Method("updateByExample");
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
+                interfaze.addImportedType(FullyQualifiedJavaType.getNewListInstance());
+            }
 
-            method = new Method("updateByExampleWithoutBLOBs");
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
-        }
-        if (null != globalTableConfiguration && globalTableConfiguration.isUpdateByPrimaryKeyStatementEnabled()) {
-            method = new Method("updateByPrimaryKeySelective");
-            method.addParameter(obj);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
+            if ( globalTableConfiguration.isSelectByPrimaryKeyStatementEnabled()) {
+                method = new Method("selectByPrimaryKey");
+                method.addParameter(key);
+                method.setReturnType(t);
+                interfaze.addMethod(method);
+            }
 
-            method = new Method("updateByPrimaryKeyWithBLOBs");
-            method.addParameter(obj);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
+            if ( globalTableConfiguration.isUpdateByExampleStatementEnabled()) {
+                method = new Method("updateByExampleSelective");
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                interfaze.addMethod(method);
 
-            method = new Method("updateByPrimaryKeyWithoutBLOBs");
-            method.addParameter(obj);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            interfaze.addMethod(method);
+                method = new Method("updateByExampleWithBLOBs");
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                interfaze.addMethod(method);
+
+                method = new Method("updateByExample");
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                interfaze.addMethod(method);
+            }
+            if ( globalTableConfiguration.isUpdateByPrimaryKeyStatementEnabled()) {
+                method = new Method("updateByPrimaryKeySelective");
+                method.addParameter(obj);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                interfaze.addMethod(method);
+
+                method = new Method("updateByPrimaryKeyWithBLOBs");
+                method.addParameter(obj);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                interfaze.addMethod(method);
+
+                method = new Method("updateByPrimaryKeyWithoutBLOBs");
+                method.addParameter(obj);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                interfaze.addMethod(method);
+            }
         }
 
         method = new Method("getDao");
@@ -397,171 +467,249 @@ public class BaseJavaFiles extends PluginAdapter {
         method = new Method("setPrimaryKey");
         method.addParameter(obj);
         interfaze.addMethod(method);
-
-        return addExampleArg;
     }
 
-    private boolean superServiceImplementMethodGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+    private void superServiceImplementMethodGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         FullyQualifiedJavaType list = FullyQualifiedJavaType.getNewListInstance();
         FullyQualifiedJavaType t = new FullyQualifiedJavaType("T");
-        FullyQualifiedJavaType exmple = new FullyQualifiedJavaType("Example");
+        FullyQualifiedJavaType exampleFqjt = new FullyQualifiedJavaType("Example");
         list.addTypeArgument(t);
 
-        boolean addExampleArg = false;
         //countByExample
         Method method;
         Parameter obj = new Parameter(t, "obj");
-        Parameter example = new Parameter(exmple, "example");
+        Parameter example = new Parameter(exampleFqjt, "example");
         Parameter key = new Parameter(FullyQualifiedJavaType.getStringInstance(), "key");
-        if (null != globalTableConfiguration && globalTableConfiguration.isCountByExampleStatementEnabled()) {
-            addExampleArg = true;
-            method = new Method("countByExample");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addParameter(example);
-            method.addBodyLine("return getDao().countByExample(example);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
+        if (null != globalTableConfiguration){
+
+            if ( globalTableConfiguration.isCountByExampleStatementEnabled()) {
+                method = new Method("countByExample");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+
+                method.addBodyLine("return getDao().countByExample(example);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+            }
+            if ( globalTableConfiguration.isDeleteByExampleStatementEnabled()) {
+                method = new Method("deleteByExample");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().deleteByExample(example);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+            }
+
+            if ( globalTableConfiguration.isDeleteByPrimaryKeyStatementEnabled()) {
+                method = new Method("deleteByPrimaryKey");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.addParameter(key);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().deleteByPrimaryKey(key);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+            }
+
+            if ( globalTableConfiguration.isInsertStatementEnabled()) {
+                method = new Method("insert");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.addParameter(obj);
+                method.setReturnType(new FullyQualifiedJavaType("T"));
+                method.addBodyLine("int num = getDao().insert(obj);");
+                method.addBodyLine("if(0 == num){");
+                method.addBodyLine("return null;");
+                method.addBodyLine("}");
+                method.addBodyLine("return obj;");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("insertSelective");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.addParameter(obj);
+                method.setReturnType(new FullyQualifiedJavaType("T"));
+                method.addBodyLine("int num = getDao().insertSelective(obj);");
+                method.addBodyLine("if(0 == num){");
+                method.addBodyLine("return null;");
+                method.addBodyLine("}");
+                method.addBodyLine("return obj;");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+            }
+
+            if ( globalTableConfiguration.isSelectByExampleStatementEnabled()) {
+                method = new Method("selectByExampleWithBLOBs");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.setReturnType(list);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.addBodyLine("return getDao().selectByExampleWithBLOBs(example);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("selectByExampleWithBLOBs");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.setReturnType(list);
+                method.addParameter(example);
+                method.addParameter(listOrderParameter);
+                // TODO
+                method.addBodyLine("return getDao().selectByExampleWithBLOBsByPager(example,pager);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("selectByExampleWithBLOBsByPager");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.setReturnType(methodReturn);
+                topLevelClass.addImportedType(pageList);
+                topLevelClass.addImportedType(pageBounds);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.addParameter(new Parameter(pageBounds, "pageBounds"));
+                method.addBodyLine("return getDao().selectByExampleWithBLOBsByPager(example, pageBounds);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("selectByExample");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(list);
+                method.addBodyLine("return getDao().selectByExample(example);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("selectByExample");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.addParameter(listOrderParameter);
+                method.setReturnType(list);
+                method.addBodyLine("return getDao().selectByExampleByPager(example, pager);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("selectByExampleByPager");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.addParameter(new Parameter(pageBounds,"pageBounds"));
+                method.setReturnType(methodReturn);
+                method.addBodyLine("return getDao().selectByExampleByPager(example, pageBounds);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                topLevelClass.addImportedType(FullyQualifiedJavaType.getNewListInstance());
+            }
+
+            if ( globalTableConfiguration.isSelectByPrimaryKeyStatementEnabled()) {
+                method = new Method("selectByPrimaryKey");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.addParameter(key);
+                method.setReturnType(t);
+                method.addBodyLine("return getDao().selectByPrimaryKey(key);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+            }
+
+            if ( globalTableConfiguration.isUpdateByExampleStatementEnabled()) {
+                method = new Method("updateByExampleSelective");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().updateByExampleSelective(example);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("updateByExampleWithBLOBs");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().updateByExampleWithBLOBs(example);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("updateByExample");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().updateByExample(example);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("updateByExampleWithoutBLOBs");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                if (addExampleArg){
+                    method.addParameter(example);
+                } else {
+                    method.addParameter(obj);
+                }
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().updateByExampleWithoutBLOBs(example);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+            }
+            if ( globalTableConfiguration.isUpdateByPrimaryKeyStatementEnabled()) {
+                method = new Method("updateByPrimaryKeySelective");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.addParameter(obj);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().updateByPrimaryKeySelective(obj);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("updateByPrimaryKeyWithBLOBs");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.addParameter(obj);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().updateByPrimaryKeyWithBLOBs(obj);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+
+                method = new Method("updateByPrimaryKeyWithoutBLOBs");
+                method.setVisibility(JavaVisibility.PUBLIC);
+                method.addParameter(obj);
+                method.setReturnType(FullyQualifiedJavaType.getIntInstance());
+                method.addBodyLine("return getDao().updateByPrimaryKeyWithoutBLOBs(obj);");
+                method.addAnnotation("@Override");
+                topLevelClass.addMethod(method);
+            }
         }
-        if (null != globalTableConfiguration && globalTableConfiguration.isDeleteByExampleStatementEnabled()) {
-            addExampleArg = true;
-            method = new Method("deleteByExample");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().deleteByExample(example);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-        }
-
-        if (null != globalTableConfiguration && globalTableConfiguration.isDeleteByPrimaryKeyStatementEnabled()) {
-            method = new Method("deleteByPrimaryKey");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(key);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().deleteByPrimaryKey(key);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-        }
-
-        if (null != globalTableConfiguration && globalTableConfiguration.isInsertStatementEnabled()) {
-            method = new Method("insert");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(obj);
-            method.setReturnType(new FullyQualifiedJavaType("T"));
-            method.addBodyLine("int num = getDao().insert(obj);");
-            method.addBodyLine("if(0 == num){");
-            method.addBodyLine("return null;");
-            method.addBodyLine("}");
-            method.addBodyLine("return obj;");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-
-            method = new Method("insertSelective");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(obj);
-            method.setReturnType(new FullyQualifiedJavaType("T"));
-            method.addBodyLine("int num = getDao().insertSelective(obj);");
-            method.addBodyLine("if(0 == num){");
-            method.addBodyLine("return null;");
-            method.addBodyLine("}");
-            method.addBodyLine("return obj;");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-        }
-
-        if (null != globalTableConfiguration && globalTableConfiguration.isSelectByExampleStatementEnabled()) {
-            addExampleArg = true;
-            method = new Method("selectByExampleWithBLOBs");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.setReturnType(list);
-            method.addParameter(example);
-            method.addBodyLine("return getDao().selectByExampleWithBLOBs(example);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-
-            method = new Method("selectByExample");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(example);
-            method.setReturnType(list);
-            method.addBodyLine("return getDao().selectByExampleWithBLOBs(example);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-
-            topLevelClass.addImportedType(FullyQualifiedJavaType.getNewListInstance());
-        }
-
-        if (null != globalTableConfiguration && globalTableConfiguration.isSelectByPrimaryKeyStatementEnabled()) {
-            method = new Method("selectByPrimaryKey");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(key);
-            method.setReturnType(t);
-            method.addBodyLine("return getDao().selectByPrimaryKey(key);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-        }
-
-        if (null != globalTableConfiguration && globalTableConfiguration.isUpdateByExampleStatementEnabled()) {
-            addExampleArg = true;
-            method = new Method("updateByExampleSelective");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().updateByExampleSelective(example);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-
-            method = new Method("updateByExampleWithBLOBs");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().updateByExampleWithBLOBs(example);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-
-            method = new Method("updateByExample");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().updateByExample(example);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-
-            method = new Method("updateByExampleWithoutBLOBs");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(example);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().updateByExampleWithoutBLOBs(example);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-        }
-        if (null != globalTableConfiguration && globalTableConfiguration.isUpdateByPrimaryKeyStatementEnabled()) {
-            method = new Method("updateByPrimaryKeySelective");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(obj);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().updateByPrimaryKeySelective(obj);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-
-            method = new Method("updateByPrimaryKeyWithBLOBs");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(obj);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().updateByPrimaryKeyWithBLOBs(obj);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-
-            method = new Method("updateByPrimaryKeyWithoutBLOBs");
-            method.setVisibility(JavaVisibility.PUBLIC);
-            method.addParameter(obj);
-            method.setReturnType(FullyQualifiedJavaType.getIntInstance());
-            method.addBodyLine("return getDao().updateByPrimaryKeyWithoutBLOBs(obj);");
-            method.addAnnotation("@Override");
-            topLevelClass.addMethod(method);
-        }
-
-        return addExampleArg;
     }
 
     private void superServiceImplementGenerated(IntrospectedTable introspectedTable, List<GeneratedJavaFile> files) {
@@ -571,7 +719,7 @@ public class BaseJavaFiles extends PluginAdapter {
         TopLevelClass topLevelClass = new TopLevelClass(serviceImplementFqjt);
         topLevelClass.setVisibility(JavaVisibility.PUBLIC);
 
-        boolean addExampleArg = superServiceImplementMethodGenerated(topLevelClass, introspectedTable);
+        superServiceImplementMethodGenerated(topLevelClass, introspectedTable);
         if (addExampleArg) {
             serviceImplementFqjt.addTypeArgument(new FullyQualifiedJavaType("Example"));
         }

@@ -25,12 +25,17 @@ public class FuzzySearchPlugin extends PluginAdapter {
     private String suffix;
     private Boolean pager;
     private String targetPackage;
+    private FullyQualifiedJavaType pageBounds;
+    private FullyQualifiedJavaType pageList;
+
 
     @Override
     public boolean validate(List<String> warnings) {
         suffix = properties.getProperty("suffix");
         pager = Boolean.valueOf(properties.getProperty("pager"));
         targetPackage = properties.getProperty("targetPackage");
+        pageList = new FullyQualifiedJavaType(context.getProperty("pageList"));
+        pageBounds = new FullyQualifiedJavaType(context.getProperty("pageBounds"));
         return true;
     }
 
@@ -52,9 +57,7 @@ public class FuzzySearchPlugin extends PluginAdapter {
         if (pager){
             method = new Method("fuzzySearchByPager");
 
-            FullyQualifiedJavaType pageList = new FullyQualifiedJavaType(properties.getProperty("pageReturn"));
-            FullyQualifiedJavaType pageBounds = new FullyQualifiedJavaType(properties.getProperty("pageParam"));
-            methodReturn = new FullyQualifiedJavaType(properties.getProperty("pageReturn"));
+            methodReturn = new FullyQualifiedJavaType(context.getProperty("pageList"));
 
             parameter = new Parameter(pageBounds, "pageBounds");
             parameter.addAnnotation("@Param(\"pageBounds\")");
