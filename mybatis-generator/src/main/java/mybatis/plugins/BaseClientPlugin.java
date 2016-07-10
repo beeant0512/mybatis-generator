@@ -491,6 +491,7 @@ public class BaseClientPlugin extends PluginAdapter {
             method.addParameter(genericParam);
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
 
+            method.addBodyLine("setKey(record);");
             method.addBodyLine("return getDao().insert(" + genericParam.getName() + ");");
             topLevelClass.addMethod(method);
 
@@ -499,6 +500,7 @@ public class BaseClientPlugin extends PluginAdapter {
             method.addParameter(genericParam);
             method.setReturnType(FullyQualifiedJavaType.getIntInstance());
 
+            method.addBodyLine("setKey(record);");
             method.addBodyLine("return getDao().insertSelective(" + genericParam.getName() + ");");
             topLevelClass.addMethod(method);
         }
